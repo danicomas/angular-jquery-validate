@@ -16,6 +16,54 @@ jzaefferer/jquery-validation (https://github.com/jzaefferer/jquery-validation) t
 var app = angular.module('YourApp', ['angular-jquery-validate']);
 ```
 
+```js
+app.config(function ($jqueryValidateProvider) {
+    $jqueryValidateProvider.setDefaults({
+   errorPlacement: function (error, element) {
+  
+   },
+   showErrors: function (errorMap, errorList) {
+  	 this.defaultShowErrors();
+  
+  	 // destroy tooltips on valid elements
+  	 $("." + this.settings.validClass).tooltip("destroy");
+  	 $("." + this.settings.validClass).removeAttr("data-original-title");
+  
+  	 // add/update tooltips 
+  	 for (var i = 0; i < errorList.length; i++) {
+  		 var error = errorList[i];
+  
+  		 if ($("#" + error.element.id).attr("data-original-title")) {
+  			 if (!($("#" + error.element.id).attr("data-original-title") == error.message)) {
+  				 $("#" + error.element.id).tooltip("destroy");
+  				 $("#" + error.element.id).tooltip({
+  					 placement: "right",
+  					 template: '<div class="tooltip tooltip-error" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+  				 }).attr("data-original-title", error.message);
+  				 $("#" + error.element.id).tooltip("show");
+  			 }
+  		 }
+  		 else {
+  			 $("#" + error.element.id).tooltip({
+  				 trigger: "focus",
+  				 placement: "right",
+  				 template: '<div class="tooltip tooltip-error" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+  			 }).attr("data-original-title", error.message);
+  		 }
+  	 }
+   }
+  });
+  
+  $jqueryValidateProvider.addMethod("time24", function (value, element) {
+   return /^([01]?[0-9]|2[0-3])(:[0-5][0-9]){2}$/.test(value);
+  }, "Invalid time format.");
+  
+  $jqueryValidateProvider.addMethod("time24WithoutSeconds", function (value, element) {
+   return /^([0-1]\d|2[0-3]):([0-5]\d)/.test(value);
+  }, "Invalid time format.");
+});
+```
+
 ### View
 
 ```html
